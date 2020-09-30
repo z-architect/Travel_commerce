@@ -28,10 +28,12 @@ app.post('/',(req,res)=>{
 })
 app.post('/api/users/register',(req,res)=>{
 	const user = new User(req.body);
+	console.log(user);
 
 	user.save((err,userData)=>{
 		if(err) return res.json({success: false,err})
 	});
+
 	return res.status(200).json({sucess:true});
 })
 
