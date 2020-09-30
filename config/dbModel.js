@@ -31,20 +31,45 @@ const userSchema = mongoose.Schema({
 	}
 })
 
-userSchema.pre('save',function(next){
-	let user = this;
+userSchema.pre('save',async function save(next){
+	var user = this;
+	
 	if(user.isModified('password')){
+		
+try{
+	const salt = await bcrypt.genSalt(saltRounds);
 
+	user.password = await bcrypt.hash(user.password,salt);
+	console.log(salt,"mmm... salty");
+	console.log("the salt was logged i think");
+	console.log(user.password,"Got the password too i think");
+	return next();
+}catch(err){
+	console.log(err);
+	return next(err);
+}
+		/*//console.log("minshe 1");
 		bcrypt.genSalt(saltRounds,function(err,salt){
-			if(err){return next(err);}
+			//console.log("minshe 2");
+			if(err){
+			//console.log("err trigured");
+				return next(err);}
 		})
-
+		//console.log("minshe 3, next line salt incoming");
+		//console.log(salt);
  		bcrypt.hash(user.password, salt,function(err,hash){
-			if(err){return next(err);}
+ 			//console.log("Ligbaw , ligebaw new");
+			if(err){
+				//console.log("Place 6: chigir tefetrual");
+				return next(err);}
+			//console.log("Place 7: error is passed and we about to hash");
 			user.password = hash;
+			console.log("Hasdh tedergual ketlo hashu new");
+			console.log(user.password);
 		})
-	}	
+	*/}	
 	else{
+	
 		next();
 	}
 
