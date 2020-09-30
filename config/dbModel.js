@@ -64,8 +64,10 @@ try{
 				return next(err);}
 			//console.log("Place 7: error is passed and we about to hash");
 			user.password = hash;
-			console.log("Hasdh tedergual ketlo hashu new");
-			console.log(user.password);
+			//Its not working because we didnt do next(), f me malet new, no f the guy who made the video
+			next();
+			//console.log("Hasdh tedergual ketlo hashu new");
+			//console.log(user.password);
 		})
 	*/}	
 	else{
