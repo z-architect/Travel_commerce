@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import Container from 'react-bootstrap/Container';
 //import InputGroup from 'react-bootstrap/InputGroup';
 //import FormControl from 'react-bootstrap/FormControl';
+import {Link} from 'react-router-dom'
+import loginUser from '../../actions/user_axtions';
+import {connect} from 'react-redux';
 import {Row,Col} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -12,7 +15,7 @@ class Login extends Component {
         this.state={
             email:"",
             password:"",
-            error:[],
+            errors:[],
             form:"not submitted"
         }
         this.handleSubmit= this.handleSubmit.bind(this);
@@ -20,12 +23,13 @@ class Login extends Component {
     
 
     
-validateForm = (item)=>{
-if(item.email === "" || item.password === "")
-return false;
+isFormValid = ({email,password})=> email && password ;
 
-return true;
-}
+displayErrors = (errors) =>
+    errors.map((error,i)=>
+    <p key={i}>{error}</p>)
+    
+
 
     handleSubmit = (event)=>{
         event.preventDefault();
@@ -35,18 +39,44 @@ return true;
         this.setState({form:"submitted"});
         // console.log(this.state.email )
         // console.log(this.state.password)
-        if(this.validateForm(this.state))
-        {
-            console.log("form is in perfect condition");
-            valid = true;
-        }else{
-            console.log("your trying to submit either and empty  pass or email")
-            valid = false;
-        }
         let dataToBeSent = {
             email : this.state.email,
             password : this.state.password
         }
+        if(this.isFormValid(this.state))
+        {
+            console.log("form is in perfect condition");
+            valid = true;
+            this.setState({errors:[]})
+            this.props.dispatch(loginUser(dataToBeSent))
+            .then(response=>{
+                console.log(response);
+                if(response.payload.loginSuccess)
+                {
+                alert("logged in succesesfully");
+                this.props.history.push('/');
+                }
+                else{
+                    this.setState(state=>{
+                        const errors = this.state.errors.concat("abate no email and password in database")
+                        return {
+                            errors,
+                        }
+                    })
+                }
+            
+            })
+        }else{
+            this.setState(state=>{
+                const errors = this.state.errors.concat("Email or Pass Empty!");
+                return {
+                    errors,
+                }
+            })
+            console.log("your trying to submit either and empty  pass or email")
+            valid = false;
+        }
+        
 
     }
     handleChange = (event)=>{
@@ -77,7 +107,20 @@ return true;
                                 type="password" placeholder="PassWord Ova Er  govna"
                                 onChange={this.handleChange}/>
                             </Row>
-                            <Button type="submit"> Submit </Button>
+                            {
+                                this.state.errors.length > 0 && (
+                                <div>
+                                    {this.displayErrors(this.state.errors)}
+                                </div>
+                                )
+                            }
+                            <Row>
+                            <Button type="submit" varient="blue"> Submit </Button> &nbsp; &nbsp;
+                            <Link to="/register">
+                            <Button >SIGN UP</Button>
+                            </Link>
+                            </Row>
+                            
                         </Form>
                     </Col>
                 </Row>
@@ -86,8 +129,13 @@ return true;
         );
     }
 }
+function mapStateToProps(state){
+    return {
+        user:state.user
+    }
 
-export default Login; 
+}
+export default connect(mapStateToProps)(Login); 
 
 
 {/* <Container>
