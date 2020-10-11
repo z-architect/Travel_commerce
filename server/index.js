@@ -42,7 +42,7 @@ app.post('/api/users/register',(req,res)=>{
 	console.log(user);
 
 	user.save((err,doc)=>{
-		if(err) return res.json({success: false,err});//console.log("something failed");
+		if(err) {console.log("something failed");return res.json({success: false,err});}
 	return res.status(200).json({sucess:true,userData:doc});
 	});
 })
